@@ -67,6 +67,7 @@ target_compile_definitions(VoltaResonance
         JUCE_WEB_BROWSER=0
         JUCE_USE_CURL=0
         JUCE_VST3_CAN_REPLACE_VST2=0
+        _USE_MATH_DEFINES       # exposes M_PI on MSVC/Windows
 )
 
 target_link_libraries(VoltaResonance

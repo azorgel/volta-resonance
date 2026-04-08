@@ -12,6 +12,9 @@ primary_region = "iad"       # Washington DC — change if you prefer another re
 [[services]]
   internal_port = 8080
   protocol      = "tcp"
+  auto_stop_machines  = "stop"   # shut down when no connections
+  auto_start_machines = true     # wake on first incoming connection
+  min_machines_running = 0       # allow full shutdown
 
   [[services.ports]]
     port     = 80

@@ -1,0 +1,74 @@
+name: Build & Release Windows Installer
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (e.g. v1.1)'
+        required: true
+        default: 'v1.1'
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+    permissions:
+      contents: write   # required to create GitHub Releases
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure CMake
+        run: cmake -B build -A x64 -S .
+
+      - name: Build Release
+        run: cmake --build build --config Release --parallel
+
+      - name: Install NSIS
+        run: choco install nsis --no-progress -y
+
+      - name: Create installer
+        shell: pwsh
+        run: |
+          $buildDir = "$pwd\build"
+          $distDir  = "$pwd\dist"
+          New-Item -ItemType Directory -Force -Path $distDir | Out-Null
+          & "C:\Program Files (x86)\NSIS\makensis.exe" `
+              "/DBUILD_DIR=$buildDir" `
+              "/DDIST_DIR=$distDir"   `
+              "installer\volta-resonance.nsi"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          # Rename to URL-friendly filename for clean download link
+          Copy-Item "$distDir\VOLTA Resonance Installer.exe" `
+                    "$distDir\VOLTA_Resonance_Installer.exe"
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.version }}
+          name: "VOLTA Resonance ${{ github.event.inputs.version }} — Windows"
+          body: |
+            ## Install VOLTA Resonance
+
+            **[⬇ Download VOLTA_Resonance_Installer.exe](../../releases/download/${{ github.event.inputs.version }}/VOLTA_Resonance_Installer.exe)**
+
+            ---
+
+            ### Steps
+
+            1. Click the download link above
+            2. Double-click `VOLTA_Resonance_Installer.exe`
+            3. **If Windows shows a blue "Windows protected your PC" screen:**
+               click **More info** → **Run anyway**
+               *(This appears because the file isn't commercially signed — it's safe)*
+            4. Click **Next** → **Install** → **Finish** (needs admin/UAC prompt)
+            5. Open **Ableton Live**
+            6. **Preferences** → **Plug-Ins** → click **Rescan Plug-Ins**
+            7. Add a MIDI track → click the instrument slot → **VST3** → **Volta Labs** → **VOLTA Resonance**
+            8. Play any MIDI notes — default mapping: C1=Kick, D1=Snare, F#1=Hi-hat, A#1=Crash
+
+            ### Uninstall
+            **Settings** → **Apps** → search "VOLTA Resonance" → Uninstall
+          files: dist\VOLTA_Resonance_Installer.exe
+          draft: false
+          prerelease: false

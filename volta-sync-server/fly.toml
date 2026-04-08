@@ -1,0 +1,27 @@
+# fly.toml — Fly.io deployment config for VOLTA Sync relay
+
+app = "volta-sync"
+primary_region = "iad"       # Washington DC — change if you prefer another region
+
+[build]
+  # Fly auto-detects Node.js from package.json
+
+[env]
+  PORT = "8080"
+
+[[services]]
+  internal_port = 8080
+  protocol      = "tcp"
+
+  [[services.ports]]
+    port     = 80
+    handlers = ["http"]
+
+  [[services.ports]]
+    port     = 443
+    handlers = ["tls", "http"]
+
+  [services.concurrency]
+    type       = "connections"
+    hard_limit = 1000
+    soft_limit = 800

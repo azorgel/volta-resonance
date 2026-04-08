@@ -1,0 +1,4 @@
+# Hashes of file build rules.
+53a75fbf34f0aef1f9f8aa8b8d1b826b VoltaResonance_artefacts/JuceLibraryCode/JuceHeader.h
+cf0d21882dad9969da8f401d31b818a4 VoltaResonance_artefacts/JuceLibraryCode/VoltaResonance_AU/PkgInfo
+7bc805d4f7c1c7414565fefdaf506a2e VoltaResonance_artefacts/JuceLibraryCode/VoltaResonance_VST3/PkgInfo

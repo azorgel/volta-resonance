@@ -1,7 +1,0 @@
-{
-	"InstallScripts" : 
-	[
-		"/Users/azorgel/drum-pack/build/_deps/juce-subbuild/cmake_install.cmake"
-	],
-	"Parallel" : false
-}
